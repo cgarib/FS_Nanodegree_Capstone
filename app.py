@@ -16,10 +16,9 @@ def create_app(test_config=None):
       response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, true')
       response.headers.add('Access-Control-Allow-Methods', 'GET, PATCH, POST, DELETE, OPTIONS')
       return response
+
   @app.route('/')
-  @requires_auth('view:movies')
-  def get_movies():
-      
+  def index():
       return 'Hello World!'
 
   @app.route('/movies')
