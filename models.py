@@ -19,11 +19,11 @@ class Movie(db.Model):
     actors = db.relationship('Actor', backref='movies')
 
     def format(self):
-        return{
+        return {
             'id': self.id,
             'title': self.title,
             'release_date': self.release_date,
-            'actors': self.actors        
+            'actors': self.actors
         }
 
     def insert(self):
@@ -37,13 +37,15 @@ class Movie(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+
 class Actor(db.Model):
-    __tablename__ = 'actors' 
+    __tablename__ = 'actors'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     gender = db.Column(db.String)
     age = db.Column(db.Integer)
-    movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), nullable=False)
+    movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'),
+                         nullable=False)
 
     def format(self):
         return {
@@ -57,7 +59,7 @@ class Actor(db.Model):
     def insert(self):
         db.session.add(self)
         db.session.commit()
-    
+
     def update(self):
         db.session.commit()
 
