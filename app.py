@@ -21,25 +21,25 @@ def create_app(test_config=None):
   def index():
       return 'Hello World!'
 
-  @app.route('/movies')
+  @app.route('/movies', methods=['GET'])
   @requires_auth('view:movies')
-  def get_movies():
+  def get_movies(payload):
       movies = Movie.query.all()
       movies = [movie.format() for movie in movies]
       for movie in movies:
         movie['actors'] = [actor.format() for actor in movie['actors']]
       return jsonify(movies)
   
-  @app.route('/actors')
+  @app.route('/actors', methods=['GET'])
   @requires_auth('view:actors')
-  def get_actors():
+  def get_actors(payload):
       actors = Actor.query.all()
       actors = [actor.format() for actor in actors]
       return jsonify(actors)
 
-  @app.route('/movies/create', methods=['POST'])
+  @app.route('/movies', methods=['POST'])
   @requires_auth('post:movie')
-  def post_new_movie():
+  def post_new_movie(payload):
       body = request.get_json()
 
       title = body.get('title', None)
@@ -56,9 +56,9 @@ def create_app(test_config=None):
         'new_movie': new_movie
       })
 
-  @app.route('/actors/create', methods=['POST'])
+  @app.route('/actors', methods=['POST'])
   @requires_auth('post:actor')
-  def post_new_actor():
+  def post_new_actor(payload):
       body = request.get_json()
       name = body.get('name', None)
       age = body.get('age', None)
@@ -76,9 +76,9 @@ def create_app(test_config=None):
         'new_actor': new_actor
       })
 
-  @app.route('/movies/delete/<int:movie_id>', methods=['DELETE'])
+  @app.route('/movies/<int:movie_id>', methods=['DELETE'])
   @requires_auth('delete:movie')
-  def delete_movie(movie_id):
+  def delete_movie(payload,movie_id):
       Movie.query.filter(Movie.id == movie_id).delete()
       db.session.commit()
       db.session.close()
@@ -87,9 +87,9 @@ def create_app(test_config=None):
         "message" : "Delete occured"
       })
 
-  @app.route('/actors/delete/<int:actor_id>', methods=['DELETE'])
+  @app.route('/actors/<int:actor_id>', methods=['DELETE'])
   @requires_auth('delete:actor')
-  def delete_actor(actor_id):
+  def delete_actor(payload,actor_id):
       Actor.query.filter(Actor.id == actor_id).delete()
       db.session.commit()
       db.session.close()
@@ -98,9 +98,9 @@ def create_app(test_config=None):
         "message" : "Delete occured"
       })
 
-  @app.route('/actors/patch/<int:actor_id>', methods=['PATCH'])
+  @app.route('/actors/<int:actor_id>', methods=['PATCH'])
   @requires_auth('patch:actors')
-  def patch_actor(actor_id):
+  def patch_actor(payload, actor_id):
 
       actor = Actor.query.filter(Actor.id== actor_id)
       body = request.get_json()
@@ -118,9 +118,9 @@ def create_app(test_config=None):
         "message": "update occured"
       })
     
-  @app.route('/movies/patch/<int:movie_id>')
+  @app.route('/movies/<int:movie_id>', methods=['PATCH'])
   @requires_auth('patch:movies')
-  def patch_movie(movie_id):
+  def patch_movie(payload, movie_id):
       movie = Movie.query.filter(Movie.id == movie_id)
       body = request.get_json()
       title = body.get('title', None)
@@ -148,7 +148,7 @@ def create_app(test_config=None):
         'error': 422,
         'message': 'Unprocessable Entity'
       })     
-       
+
   @app.errorhandler(AuthError)
   def authentification_failed(AuthError):
       return jsonify({
