@@ -147,7 +147,16 @@ def create_app(test_config=None):
         'success': False,
         'error': 422,
         'message': 'Unprocessable Entity'
-      })      
+      })     
+       
+  @app.errorhandler(AuthError)
+  def authentification_failed(AuthError):
+      return jsonify({
+          "success": False,
+          "error": AuthError.status_code,
+          "message": AuthError.error
+      }), 401
+
 
   return app
 

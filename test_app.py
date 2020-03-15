@@ -19,55 +19,54 @@ class CastingTestCase(unittest.TestCase):
         db.create_all()
 
         self.new_movie = {
-            'title': 'New Movie',
-            'release_date' : datetime.date(2019, 3, 13),
+            'title': 'Avengers 12',
+            'release_date' : datetime.date(2025, 3, 14),
         }
 
         self.new_actor = {
-            'name': 'John Doe',
-            'age': 22,
+            'name': 'Cristobal Garib',
             'gender': 'Male',
+            'age': 32,
             'movie_id': 1
         }
 
         with self.app.app_context():
             self.db = SQLAlchemy()
             self.db.init_app(self.app)
-            # create all tables
             self.db.create_all()
     
     def tearDown(self):
         pass
 
-    def test_get_movies(self):
+    def test_get_all_movies(self):
         res = self.client().get('/movies')
         self.assertEqual(res.status_code, 200)
 
-    def test_get_movies_fail(self):
-        res = self.client().get('/moviess')
+    def test_fail_get_movies(self):
+        res = self.client().get('/movie')
         self.assertEqual(res.status_code, 404)
 
-    def test_get_actors(self):
+    def test_get_all_actors(self):
         res = self.client().get('/actors')
         self.assertEqual(res.status_code, 200)
 
-    def test_get_actors_fail(self):
-        res = self.client().get('/actorss')
+    def test_fail_get_actors(self):
+        res = self.client().get('/actor')
         self.assertEqual(res.status_code, 404)
 
-    def test_create_movie(self):
+    def test_post_movie(self):
         res = self.client().post('/movies/create', json=self.new_movie)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertEqual(data['new_movie']['title'], 'New Movie')
+        self.assertEqual(data['new_movie']['title'], 'Avengers 12')
 
-    def test_create_actor(self):
+    def test_post_actor(self):
         res = self.client().post('/actors/create', json=self.new_actor)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertEqual(data['new_actor']['name'], 'John Doe')
+        self.assertEqual(data['new_actor']['name'], 'Cristobal Garib')
     
     def test_delete_movie(self):
         res = self.client().delete('/movies/delete/1')
@@ -75,8 +74,8 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
     
-    def test_delete_movie_fail(self):
-        res = self.client().delete('/movies/delete/1000')
+    def test_fail_delete_movie(self):
+        res = self.client().delete('/movies/delete/100')
         self.assertEqual(res.status_code, 404)
     
     def test_delete_actor(self):
@@ -85,36 +84,30 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
     
-    def test_delete_actor_fail(self):
+    def test_fail_delete_actor(self):
         res = self.client().delete('/actors/delete/1000')
         self.assertEqual(res.status_code, 404)
     
-    def test_patch_movie(self):
+    def test_edit_movie(self):
         res = self.client().patch('/movies/patch/2', json=self.new_movie)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
     
-    def test_patch_movie_fail(self):
-        res = self.client().patch('/movies/patch/2000', json=self.new_movie)
+    def test_fail_edit_movie(self):
+        res = self.client().patch('/movies/patch/10', json=self.new_movie)
         self.assertEqual(res.status_code, 404)
 
     
-    def test_patch_actor(self):
+    def test_edit_actor(self):
         res = self.client().patch('/actors/patch/2', json=self.new_actor)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
     
-    def test_patch_actor_fail(self):
-        res = self.client().patch('/actors/patch/2000', json=self.new_actor)
+    def test_fail_edit_actor(self):
+        res = self.client().patch('/actors/patch/10', json=self.new_actor)
         self.assertEqual(res.status_code, 404)
     
-
-
-
-
-
-
 if __name__ == "__main__":
     unittest.main()
